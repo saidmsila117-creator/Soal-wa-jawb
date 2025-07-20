@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سؤال وجواب - مسابقات ثقافية ودينية</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+    }
+    header {
+      background-color: #007b83;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background-color: #0099a8;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+    .answers label {
+      display: block;
+      margin: 8px 0;
+    }
+    button {
+      background-color: #007b83;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .login-form, .scoreboard, .question-editor {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e9f9fa;
+      border: 1px solid #ccc;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    footer {
+      background-color: #007b83;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+  <script>
+    let questions = [
+      {
+        text: "من هو أول الخلفاء الراشدين؟",
+        options: [
+          "عمر بن الخطاب",
+          "علي بن أبي طالب",
+          "أبو بكر الصديق",
+          "عثمان بن عفان"
+        ],
+        answer: "أبو بكر الصديق"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function loadQuestion() {
+      const q = questions[currentQuestionIndex];
+      document.getElementById('question-text').textContent = q.text;
+      const answersDiv = document.getElementById('answers');
+      answersDiv.innerHTML = '';
+      q.options.forEach(option => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="q1" value="${option}" /> ${option}`;
+        answersDiv.appendChild(label);
+      });
+    }
+
+    function checkAnswer() {
+      const radios = document.getElementsByName('q1');
+      let selected = null;
+      for (const r of radios) {
+        if (r.checked) selected = r.value;
+      }
+      const correct = questions[currentQuestionIndex].answer;
+      if (selected === correct) {
+        alert('إجابة صحيحة!');
+        updateScore(1);
+      } else {
+        alert('إجابة خاطئة. الإجابة الصحيحة: ' + correct);
+        updateScore(0);
+      }
+    }
+
+    function updateScore(point) {
+      const username = document.getElementById('username').value;
+      if (!username) return alert('يرجى إدخال اسم المستخدم أولاً');
+      const scoreBoard = document.getElementById('scoreboard');
+      const currentScore = document.getElementById('score-' + username);
+      if (currentScore) {
+        let score = parseInt(currentScore.textContent);
+        score += point;
+        currentScore.textContent = score;
+      } else {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${username}</td><td id="score-${username}">${point}</td>`;
+        scoreBoard.appendChild(row);
+      }
+    }
+
+    function addQuestion() {
+      const qText = document.getElementById('new-question').value;
+      const opts = [
+        document.getElementById('opt1').value,
+        document.getElementById('opt2').value,
+        document.getElementById('opt3').value,
+        document.getElementById('opt4').value
+      ];
+      const correct = document.getElementById('correct').value;
+      questions.push({ text: qText, options: opts, answer: correct });
+      alert('تمت إضافة السؤال!');
+      document.getElementById('new-question').value = '';
+      document.getElementById('opt1').value = '';
+      document.getElementById('opt2').value = '';
+      document.getElementById('opt3').value = '';
+      document.getElementById('opt4').value = '';
+      document.getElementById('correct').value = '';
+    }
+
+    window.onload = loadQuestion;
+  </script>
+</head>
+<body>
+  <header>
+    <h1>سؤال وجواب</h1>
+    <p>مسابقات ثقافية ودينية لاختبار معلوماتك</p>
+  </header>
+
+  <nav>
+    <a href="#">الرئيسية</a>
+    <a href="#">المسابقات</a>
+    <a href="#">التصنيفات</a>
+    <a href="#">الترتيب</a>
+    <a href="#">اتصل بنا</a>
+  </nav>
+
+  <div class="container">
+    <div class="login-form">
+      <label for="username">اسم المستخدم:</label>
+      <input type="text" id="username" placeholder="أدخل اسمك للمشاركة" />
+    </div>
+
+    <div class="question">
+      <div id="question-text"></div>
+    </div>
+    <div class="answers" id="answers"></div>
+    <button onclick="checkAnswer()">تحقق من الإجابة</button>
+
+    <div class="scoreboard">
+      <h3>ترتيب المتسابقين</h3>
+      <table border="1" width="100%">
+        <thead>
+          <tr><th>الاسم</th><th>النقاط</th></tr>
+        </thead>
+        <tbody id="scoreboard"></tbody>
+      </table>
+    </div>
+
+    <div class="question-editor">
+      <h3>إضافة سؤال جديد</h3>
+      <textarea id="new-question" placeholder="اكتب نص السؤال هنا..."></textarea>
+      <input type="text" id="opt1" placeholder="الخيار الأول" />
+      <input type="text" id="opt2" placeholder="الخيار الثاني" />
+      <input type="text" id="opt3" placeholder="الخيار الثالث" />
+      <input type="text" id="opt4" placeholder="الخيار الرابع" />
+      <input type="text" id="correct" placeholder="الإجابة الصحيحة" />
+      <button onclick="addQuestion()">إضافة السؤال</button>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 سؤال وجواب | جميع الحقوق محفوظة
+  </footer>
+</body>
+</html>
